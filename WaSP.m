@@ -3,10 +3,14 @@ function [X_WaSP, C] = WaSP(Y, X, method, wname, lev)
 
 % Created by Ze Jiang on 13/09/2021
 % Y: response = m x 1
-% X: predictor= (m+l) x n
+% X: predictor= (m+l) x n;  m: no. of obs, n: no. of vars, l: no. of forecasts (optional)
+% method: discrete wavelet transform, including dwtmar, modwt, modwtmar, and at
+% wname: wavelet filter
+% lev: decomposition levels
 
 % OUTPUT:
-% X_WaSP = (m+l) x n; m: no of obs, n: no of vars, l: no of forecasts (optional)
+% X_WaSP: variance transformed X = (m+l) x n
+% C: covariance vector
 
 % USAGE:
 % [X_WaSP, C] = WaSP(Y, X, method, wname, lev)
@@ -24,11 +28,12 @@ function [X_WaSP, C] = WaSP(Y, X, method, wname, lev)
 C = nan(lev+1, num_var); 
 X_WaSP = nan(num_obs,num_var) ;
 
-% variance transformation
+% variance transformation for each variable
 for i_var = 1 : num_var
     % center
     X_tmp = X(:,i_var)-mean(X(:,i_var)) ; 
 
+    % wavelet transform
     if isequal(method,'modwt')
         X_WT = (modwt(X_tmp, wname, lev))'; 
     elseif isequal(method,'dwtmra')
@@ -45,7 +50,6 @@ for i_var = 1 : num_var
 %     disp(['Additive:' num2str(sum(abs(sum(X_WT,2)-X_tmp)))])
 %     disp(['Variance:' num2str(sum(var(X_WT))-var(X_tmp))])
     
-    
     %corr1 = corrcoef([Y X_WT(1:length(Y),:)]) ; %correct
     %corr1 = cov([Y X_WT(1:length(Y),:)]) ; %wrong
     %C(:,i_var) = corr1(1,2:lev+2); 
@@ -60,10 +64,11 @@ for i_var = 1 : num_var
 %     disp(norm(C_norm))
 %     disp(var(normalize(X_WT)))
     
-    % transformation -  Eq. 9 in WRR2020 paper
+    % variance transformation -  Eq. 9 in WRR2020 paper
     X_WaSP(:,i_var) = normalize(X_WT)*(std(X(:,i_var)).*C_norm(:)) ; 
     
     % add mean back
     X_WaSP(:,i_var) = X_WaSP(:,i_var) + mean(X(:,i_var)); 
+    
 end
 
