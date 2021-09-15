@@ -5,7 +5,7 @@ function [X_WaSP, C] = WaSP(Y, X, method, wname, lev)
 % Y: response = m x 1
 % X: predictor= (m+l) x n;  m: no. of obs, n: no. of vars, l: no. of forecasts (optional)
 % method: discrete wavelet transform, including dwtmar, modwt, modwtmar, and at
-% wname: wavelet filter
+% wname: wavelet filter, Daubechies wavelets are widely used. 
 % lev: decomposition levels
 
 % OUTPUT:

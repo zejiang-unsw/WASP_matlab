@@ -1,13 +1,30 @@
 clc
 clear
-%close all
+close all
 
-N = 40; 
-N_fc=0;
-n_var=4; 
-iseed = 101; 
-n_vanish = 1;
+% Created by Ze Jiang on 15/09/2021
+% Y: response = N x 1
+% X: predictor= (N+N_fc) x n_var
 
+N = 500;     % number of observation
+N_fc=12;     % number of forecast (optimal)
+n_var=4;        % number of variable
+iseed = 101;    % seed number for random number generator
+
+% initialize random number generator
+rng(iseed,'twister')
+
+% synthetic data generation
+t = linspace(-pi,pi,N);
+Y = (sin(t) + 1.0*randn(size(t)))'; % sine wave add noise
+X = randn(N+N_fc,n_var); % random predictors
+
+% Daubechies wavelet with N vanishing moments 
+% N is a positive integer from 1 to 45
+n_vanish = 1; 
+wname = ['db' num2str(n_vanish)] % db1 is equivalent to haar
+
+% method of discrete wavelet transform 
 switch 2
     case 1
         method = 'dwtmra'
@@ -17,32 +34,13 @@ switch 2
         method = 'at'
 end
 
-
-switch 1
-    case 1
-        wname = ['db' num2str(n_vanish)]
-    case 2
-        wname = ['sym' num2str(n_vanish)]
-    case 3 
-        wname = ['coif' num2str(n_vanish)]
-end
-
-rand('seed',iseed);
-Md1 = arima('Constant',0,'AR',{0.7 0.25},'Variance',0.5);
-Y = simulate(Md1,N);
-
-randn('seed',iseed);
-X = randn(N+N_fc,n_var);
-
-% maximum level floor(log2(size(X,1)))
-lev = floor(log2(size(X,1))) ; 
+% maximum decomposition level: floor(log2(size(X,1)))
+lev = floor(log2(size(X,1)))-1 ; 
 
 % variance transformation using WaSP
 [X_WaSP, C] = WaSP(Y, X, method, wname, lev); 
 
-% cov([Y, X(1:N,:)])
-% corrcoef([Y, X(1:N,:)])
-% linear regression
+% linear regression for each variable
 RMSE=nan(1,n_var);
 RMSE_WaSP=nan(1,n_var);
 RMSE_opti=nan(1,n_var);
@@ -64,18 +62,20 @@ for i_var = 1:n_var
 
 end
 
-RMSE_WaSP-RMSE_opti
-% RMSE-RMSE_opti
-% RMSE-RMSE_WaSP
+% plot RMSE
+figure
+bar([RMSE',RMSE_opti',RMSE_WaSP']);
+xlabel('No. of variable'); ylabel('RMSE')
+legend ('Std','VT','Optimal','NumColumns',1,'location','eastoutside')   
 
 % plot - Y, X and X_WaSP
 figure
-sgtitle([num2str(method) ': ' num2str(wname)])
+sgtitle(['Variance transformation based on ',num2str(method) ' using ' num2str(wname)])
 for i_var = 1:n_var
     subplot(n_var,1,i_var)
     
     plot(Y, 'k')     
-    ylim([-3,3])
+    ylim([min(Y)*1.1,max(Y)*1.1]); xlim([0,N+N_fc]);
     hold on 
     plot(X(:,i_var), 'b')
     hold on
