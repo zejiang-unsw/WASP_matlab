@@ -10,7 +10,7 @@ function [X_WaSP, C] = WaSP(Y, X, method, wname, lev)
 
 % OUTPUT:
 % X_WaSP: variance transformed X = (m+l) x n
-% C: covariance vector
+% C: covariance vector for each predictor variable C = (lev+1) x n
 
 % USAGE:
 % [X_WaSP, C] = WaSP(Y, X, method, wname, lev)
@@ -20,8 +20,7 @@ function [X_WaSP, C] = WaSP(Y, X, method, wname, lev)
 % Jiang, Z., Rashid, M. M., Johnson, F., & Sharma, A. (2020). A wavelet-based tool to modulate variance in predictors: An application to predicting drought anomalies. Environmental Modelling & Software, 135, 104907. https://doi.org/10.1016/j.envsoft.2020.104907
 % Jiang, Z., Sharma, A., & Johnson, F. (2021). Variable transformations in the spectral domain - Implications for hydrologic forecasting. Journal of Hydrology, 603, 126816. https://doi.org/10.1016/j.jhydrol.2021.126816
 
-
-% get the dimension
+% dimension of predictor matrix
 [num_obs, num_var] = size(X) ;
 
 % output matrix

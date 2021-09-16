@@ -6,8 +6,8 @@ close all
 % Y: response = N x 1
 % X: predictor= (N+N_fc) x n_var
 
-N = 500;     % number of observation
-N_fc=12;     % number of forecast (optimal)
+N = 400;     % number of observation
+N_fc=0;     % number of forecast (optimal)
 n_var=4;        % number of variable
 iseed = 101;    % seed number for random number generator
 
@@ -64,7 +64,7 @@ end
 
 % plot RMSE
 figure
-bar([RMSE',RMSE_opti',RMSE_WaSP']);
+bar([RMSE',RMSE_WaSP',RMSE_opti']);
 xlabel('No. of variable'); ylabel('RMSE')
 legend ('Std','VT','Optimal','NumColumns',1,'location','eastoutside')   
 
