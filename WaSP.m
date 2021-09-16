@@ -1,7 +1,9 @@
 
 function [X_WaSP, C] = WaSP(Y, X, method, wname, lev)
 
-% Created by Ze Jiang on 13/09/2021
+% Created by Ze Jiang on 13/09/2021 (ze.jiang@unsw.edu.au)
+% Note: This is a simplified version designed for short-term forecasts transformation. 
+
 % Y: response = m x 1
 % X: predictor= (m+l) x n;  m: no. of obs, n: no. of vars, l: no. of forecasts (optional)
 % method: discrete wavelet transform, including dwtmar, modwt, modwtmar, and at
@@ -20,8 +22,10 @@ function [X_WaSP, C] = WaSP(Y, X, method, wname, lev)
 % Jiang, Z., Rashid, M. M., Johnson, F., & Sharma, A. (2020). A wavelet-based tool to modulate variance in predictors: An application to predicting drought anomalies. Environmental Modelling & Software, 135, 104907. https://doi.org/10.1016/j.envsoft.2020.104907
 % Jiang, Z., Sharma, A., & Johnson, F. (2021). Variable transformations in the spectral domain - Implications for hydrologic forecasting. Journal of Hydrology, 603, 126816. https://doi.org/10.1016/j.jhydrol.2021.126816
 
-% dimension of predictor matrix
+% dimension of predictor
 [num_obs, num_var] = size(X) ;
+% dimension of response 
+N = length(Y);
 
 % output matrix
 C = nan(lev+1, num_var); 
@@ -48,26 +52,36 @@ for i_var = 1 : num_var
     
 %     disp(['Additive:' num2str(sum(abs(sum(X_WT,2)-X_tmp)))])
 %     disp(['Variance:' num2str(sum(var(X_WT))-var(X_tmp))])
-    
+ 
+    %standardization w.r.t. observed period
+    X_WT_n = X_WT(1:N,:);
+    X_WT_norm=(X_WT-mean(X_WT_n))./std(X_WT_n);
+%     disp(var(X_WT_norm(1:N,:)))  
+%     disp(mean(X_WT_norm(1:N,:))) 
+%     disp(sum(abs(normalize(X_WT_n)-X_WT_norm(1:N,:))))
+
     %corr1 = corrcoef([Y X_WT(1:length(Y),:)]) ; %correct
     %corr1 = cov([Y X_WT(1:length(Y),:)]) ; %wrong
     %C(:,i_var) = corr1(1,2:lev+2); 
     
     % covariance - Eq. 10 in WRR2020 paper
-    corr = 1/(length(Y)-1)*Y'*normalize(X_WT(1:length(Y),:)); 
+    corr = 1/(N-1)*Y'*X_WT_norm(1:N,:); 
+    %corr = 1/(length(Y)-1)*Y'*normalize(X_WT(1:length(Y),:)); 
     %disp(normalize(corr1(1,2:lev+2),'norm') - normalize(corr,'norm'))
     C(:,i_var) = corr; 
     
     % normalization to get unit norm
-    C_norm = normalize(C(:,i_var),'norm') ;
+    %C_norm = normalize(C(:,i_var),'norm') ;
+    C_norm = C(:,i_var)./sqrt(sum(C(:,i_var).^2)) ;
 %     disp(norm(C_norm))
-%     disp(var(normalize(X_WT)))
+%     disp(norm(C(:,i_var))-sqrt(sum(C(:,i_var).^2)))
     
     % variance transformation -  Eq. 9 in WRR2020 paper
-    X_WaSP(:,i_var) = normalize(X_WT)*(std(X(:,i_var)).*C_norm(:)) ; 
+    %X_WaSP(:,i_var) = normalize(X_WT)*(std(X(:,i_var)).*C_norm(:)) ; 
+    X_WaSP(:,i_var) = X_WT_norm*(std(X(1:N,i_var)).*C_norm) ; 
     
     % add mean back
-    X_WaSP(:,i_var) = X_WaSP(:,i_var) + mean(X(:,i_var)); 
-    
+    X_WaSP(:,i_var) = X_WaSP(:,i_var) + mean(X(1:N,i_var)); 
+   
 end
 
