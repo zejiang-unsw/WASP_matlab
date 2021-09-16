@@ -6,8 +6,8 @@ close all
 % Y: response = N x 1
 % X: predictor= (N+N_fc) x n_var
 
-N = 400;     % number of observation
-N_fc=0;     % number of forecast (optimal)
+N = 400;        % number of observation
+N_fc=0;         % number of forecast (optimal)
 n_var=4;        % number of variable
 iseed = 101;    % seed number for random number generator
 
@@ -75,7 +75,7 @@ for i_var = 1:n_var
     subplot(n_var,1,i_var)
     
     plot(Y, 'k')     
-    ylim([min(Y)*1.1,max(Y)*1.1]); xlim([0,N+N_fc]);
+    xlim([0,N+N_fc]); ylim([min(Y)*1.1,max(Y)*1.1]); 
     hold on 
     plot(X(:,i_var), 'b')
     hold on
