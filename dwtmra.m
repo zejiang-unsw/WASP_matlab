@@ -1,6 +1,6 @@
 function [X_DWT_MRA] = dwtmra(X, wname, lev)
 
-% Created by Ze Jiang on 15/09/2021
+% Created by Ze Jiang on 15/09/2021 (ze.jiang@unsw.edu.au)
 % DWT MRA wavelet transform
 
     N = length(X); 

@@ -1,6 +1,6 @@
 function  [X_AT] = AT(X, wname, lev)
 
-% Created by Ze Jiang on 15/09/2021
+% Created by Ze Jiang on 15/09/2021 (ze.jiang@unsw.edu.au)
 % a trous wavelet transform
 
   s = nan(length(X),lev);
