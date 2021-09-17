@@ -55,7 +55,15 @@ for i_var = 1 : num_var
  
     %standardization w.r.t. observed period
     X_WT_n = X_WT(1:N,:);
-    X_WT_norm=(X_WT-mean(X_WT_n))./std(X_WT_n);
+    %X_WT_norm=(X_WT-mean(X_WT_n))./std(X_WT_n);
+    
+    % alternative way to standardize data for older matlab versions
+    %subtract mean of each column
+    X_WT_c=X_WT-repmat(mean(X_WT_n),num_obs,1);
+    %divide by the standard deviation of each column
+    X_WT_norm=X_WT_c./repmat(std(X_WT_n,0,1),num_obs,1);
+%     disp(sum(abs(X_WT_norm1-X_WT_norm)))   
+    
 %     disp(var(X_WT_norm(1:N,:)))  
 %     disp(mean(X_WT_norm(1:N,:))) 
 %     disp(sum(abs(normalize(X_WT_n)-X_WT_norm(1:N,:))))
