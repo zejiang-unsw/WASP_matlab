@@ -1,11 +1,12 @@
 
-function [X_WaSP] = WaSP_val(X, C, method, wname, lev)
+function [X_WaSP] = WaSP_val(X, C, method, wname)
 
 % Created by Ze Jiang on 18/09/2021 (ze.jiang@unsw.edu.au)
 % Note: This is used for applying derived C in the validation. 
 
 % dimension of predictor
 [num_obs, num_var] = size(X) ;
+lev = size(C,1)-1;
 
 % output matrix
 X_WaSP = nan(num_obs,num_var) ;
