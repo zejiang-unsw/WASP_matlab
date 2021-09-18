@@ -2,7 +2,8 @@
 function [X_WaSP, C] = WaSP(Y, X, method, wname, lev)
 
 % Created by Ze Jiang on 13/09/2021 (ze.jiang@unsw.edu.au)
-% Note: This is a simplified version designed for short-term forecasts transformation. 
+% Note: This can be used for derive C in the calibration as well as 
+% transforming short-term forecasts. 
 
 % Y: response = m x 1
 % X: predictor= (m+l) x n;  m: no. of obs, n: no. of vars, l: no. of forecasts (optional)
@@ -92,4 +93,4 @@ for i_var = 1 : num_var
     X_WaSP(:,i_var) = X_WaSP(:,i_var) + mean(X(1:N,i_var)); 
    
 end
-
+end
