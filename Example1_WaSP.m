@@ -6,8 +6,8 @@ close all
 % Y: response = N x 1
 % X: predictor= (N+N_fc) x n_var
 
-N = 40;        % number of observation
-N_fc=0;         % number of forecast (optimal)
+N = 40;         % number of observation
+N_fc=0;         % number of forecast (optional)
 n_var=4;        % number of variable
 iseed = 101;    % seed number for random number generator
 
@@ -37,6 +37,7 @@ switch 2
 end
 
 % maximum decomposition level: floor(log2(size(X,1)))
+% or rule of thumb decomposition level: ceiling(log(n/(2*v-1))/log(2))-1 (Kaiser, 1994)
 lev = floor(log2(size(X,1)))-1 ; 
 
 % variance transformation using WaSP
@@ -93,7 +94,7 @@ saveas(gca,'comparision.fig');
 X_val=randn(N,n_var); % random predictors
 
 % variance transformation using derived C from calibration period
-X_WaSP_val = WaSP_val(X, C, method, wname); 
+X_WaSP_val = WaSP_val(X_val, C, method, wname); 
 
 figure
 sgtitle(['Validation: ',num2str(method) ' using ' num2str(wname)])
