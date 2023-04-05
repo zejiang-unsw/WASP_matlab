@@ -91,6 +91,12 @@ for i_var = 1 : num_var
     
     % add mean back
     X_WaSP(:,i_var) = X_WaSP(:,i_var) + mean(X(1:N,i_var)); 
+	
+	% maintain the original trend of the variable
+	[rho, pval] = corr(X_WaSP(:,i_var),X(:,i_var)); 
+    if rho < 0 && pval < 0.05
+        X_WaSP(:,i_var) = -X_WaSP(:,i_var); 
+    end
    
 end
 end
