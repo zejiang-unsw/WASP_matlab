@@ -6,7 +6,7 @@ close all
 % Y: response = N x 1
 % X: predictor= (N+N_fc) x n_var
 
-N = 40;         % number of observation
+N = 128;         % number of observation
 N_fc=0;         % number of forecast (optional)
 n_var=4;        % number of variable
 iseed = 101;    % seed number for random number generator
@@ -16,18 +16,20 @@ rng(iseed,'twister')
 
 %% synthetic data generation
 t = linspace(-pi,pi,N);
-Y = (sin(t) + 1.0*randn(size(t)))'; % sine wave add noise
+Y = (sin(t) + 1.0*randn(size(t)))' %+ t'; % sine wave add noise
 
-X = randn(N+N_fc,n_var); % random predictors
+X = randn(N+N_fc,n_var) %- repmat(linspace(-pi,pi,N+N_fc)',1, n_var); % random predictors
 % X = [randn(N,n_var); repmat(100,N_fc,n_var)]; % test on abnormal value from forecast
 
 %% Daubechies wavelet with N vanishing moments 
 % N is a positive integer from 1 to 45
-n_vanish = 1; 
+n_vanish = 2; 
 wname = ['db' num2str(n_vanish)] % db1 is equivalent to haar
+flag_sign=0;
+
 
 %% method of discrete wavelet transform 
-switch 2
+switch 1
     case 1
         method = 'dwtmra' %dwtmra cannot be used in the forecast setting
     case 2
@@ -41,7 +43,7 @@ end
 lev = floor(log2(size(X,1)))-1 ; 
 
 % variance transformation using WaSP
-[X_WaSP, C] = WaSP(Y, X, method, wname, lev); 
+[X_WaSP, C] = WaSP(Y, X, method, wname, lev, flag_sign); 
 
 %% linear regression for each variable
 RMSE=nan(1,n_var);
@@ -90,11 +92,12 @@ for i_var = 1:n_var
 end 
 saveas(gca,'comparision.fig');
 
+
 %% validation
 X_val=randn(N,n_var); % random predictors
 
 % variance transformation using derived C from calibration period
-X_WaSP_val = WaSP_val(X_val, C, method, wname); 
+X_WaSP_val = WaSP_val(X_val, C, method, wname,flag_sign); 
 
 figure
 sgtitle(['Validation: ',num2str(method) ' using ' num2str(wname)])

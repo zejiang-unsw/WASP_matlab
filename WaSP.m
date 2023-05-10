@@ -1,5 +1,5 @@
 
-function [X_WaSP, C] = WaSP(Y, X, method, wname, lev)
+function [X_WaSP, C] = WaSP(Y, X, method, wname, lev, flag_sign)
 
 % Created by Ze Jiang on 13/09/2021 (ze.jiang@unsw.edu.au)
 % Note: This can be used for derive C in the calibration as well as 
@@ -10,6 +10,7 @@ function [X_WaSP, C] = WaSP(Y, X, method, wname, lev)
 % method: discrete wavelet transform, including dwtmar, modwt, modwtmar, and at
 % wname: wavelet filter, Daubechies wavelets are widely used. 
 % lev: decomposition levels
+% flag_sign: 1 or 0, if the sign of C will be automatically changed
 
 % OUTPUT:
 % X_WaSP: variance transformed X = (m+l) x n
@@ -72,12 +73,13 @@ for i_var = 1 : num_var
     %corr1 = corrcoef([Y X_WT(1:length(Y),:)]) ; %correct
     %corr1 = cov([Y X_WT(1:length(Y),:)]) ; %wrong
     %C(:,i_var) = corr1(1,2:lev+2); 
-    
+
     % covariance - Eq. 10 in WRR2020 paper
-    corr = 1/(N-1)*Y'*X_WT_norm(1:N,:); 
+    %corr = 1/(N-1)*Y'*X_WT_norm(1:N,:); 
+
     %corr = 1/(length(Y)-1)*Y'*normalize(X_WT(1:length(Y),:)); 
     %disp(normalize(corr1(1,2:lev+2),'norm') - normalize(corr,'norm'))
-    C(:,i_var) = corr; 
+    C(:,i_var) = 1/(N-1)*Y'*X_WT_norm(1:N,:); 
     
     % normalization to get unit norm
     %C_norm = normalize(C(:,i_var),'norm') ;
@@ -89,14 +91,19 @@ for i_var = 1 : num_var
     %X_WaSP(:,i_var) = normalize(X_WT)*(std(X(:,i_var)).*C_norm(:)) ; 
     X_WaSP(:,i_var) = X_WT_norm*(std(X(1:N,i_var)).*C_norm) ; 
     
+    X_WT_norm'*X_WT_norm
+	% maintain the original trend of the variable
+	if flag_sign
+		[rho, pval] = corr(X_WaSP(:,i_var),X_tmp); 
+		if rho < 0 && pval < 0.05 % can change to other confidence level
+			C_norm = -C_norm ; 
+			X_WaSP(:,i_var) = X_WT_norm*(std(X(1:N,i_var)).*C_norm) ; 
+		end
+	end
+	
     % add mean back
     X_WaSP(:,i_var) = X_WaSP(:,i_var) + mean(X(1:N,i_var)); 
 	
-	% maintain the original trend of the variable
-	[rho, pval] = corr(X_WaSP(:,i_var),X(:,i_var)); 
-    if rho < 0 && pval < 0.05
-        X_WaSP(:,i_var) = -X_WaSP(:,i_var); 
-    end
-   
+
 end
 end

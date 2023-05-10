@@ -1,5 +1,5 @@
 
-function [X_WaSP] = WaSP_val(X, C, method, wname)
+function [X_WaSP] = WaSP_val(X, C, method, wname, flag_sign)
 
 % Created by Ze Jiang on 18/09/2021 (ze.jiang@unsw.edu.au)
 % Note: This is used for applying derived C in the validation. 
@@ -40,13 +40,17 @@ for i_var = 1 : num_var
     % variance transformation -  Eq. 9 in WRR2020 paper
     X_WaSP(:,i_var) = X_WT_norm*(std(X(:,i_var)).*C_norm) ; 
     
+	% maintain the original trend of the variable
+	if flag_sign
+		[rho, pval] = corr(X_WaSP(:,i_var),X_tmp); 
+		if rho < 0 && pval < 0.05 % can change to other confidence level
+			C_norm = -C_norm ; 
+			X_WaSP(:,i_var) = X_WT_norm*(std(X(:,i_var)).*C_norm) ; 
+		end
+	end
+	
     % add mean back
     X_WaSP(:,i_var) = X_WaSP(:,i_var) + mean(X(:,i_var)); 
 	
-	% maintain the original trend of the variable
-	[rho, pval] = corr(X_WaSP(:,i_var),X(:,i_var)); 
-    if rho < 0 && pval < 0.05
-        X_WaSP(:,i_var) = -X_WaSP(:,i_var); 
-    end
 end
 end
