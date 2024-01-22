@@ -11,9 +11,8 @@ Dependencies:
 </pre>
 
 ## Update history
-2023-March-07: Add unbiased modwt estimator at H:\WASP-HLC\script\WaSP_n.m
-2023-April-05: Change the sign of C to maintain the original trend of variable
-2023-April-05: Output C_norm at H:\WASP-HLC\script\WaSP_n.m
+* 2023-April-05: Add the flag_sign of C to maintain the original trend of variable
+* 2024-Jan-22: Release version 1.0 of WASP_matlab
 
 ## Citation
 Jiang, Z., Sharma, A., & Johnson, F. (2021). Variable transformations in the spectral domain – Implications for hydrologic forecasting. Journal of Hydrology, 603, 126816. [doi](https://doi.org/10.1016/J.JHYDROL.2021.126816)
