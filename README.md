@@ -11,7 +11,7 @@ Dependencies:
 </pre>
 
 ## Update history
-* 2023-April-05: Add the flag_sign of C to maintain the original trend of variable
+* 2023-Apr-05: Add the flag_sign of C to maintain the original trend of variable
 * 2024-Jan-22: Release version 1.0 of WASP_matlab
 
 ## Citation
