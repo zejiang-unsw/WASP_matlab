@@ -24,6 +24,8 @@ function [X_WaSP, C] = WaSP(Y, X, method, wname, lev, flag_sign)
 % Jiang, Z., Rashid, M. M., Johnson, F., & Sharma, A. (2020). A wavelet-based tool to modulate variance in predictors: An application to predicting drought anomalies. Environmental Modelling & Software, 135, 104907. https://doi.org/10.1016/j.envsoft.2020.104907
 % Jiang, Z., Sharma, A., & Johnson, F. (2021). Variable transformations in the spectral domain - Implications for hydrologic forecasting. Journal of Hydrology, 603, 126816. https://doi.org/10.1016/j.jhydrol.2021.126816
 
+if ~exist('flag_sign','var'), flag_sign=0; end
+
 % dimension of predictor
 [num_obs, num_var] = size(X) ;
 % dimension of response 
@@ -54,14 +56,14 @@ for i_var = 1 : num_var
     
     %standardization w.r.t. observed period
     X_WT_n = X_WT(1:N,:);
-    
+    % X_WT_norm=(X_WT-mean(X_WT))./std(X_WT_n);
+
     % alternative way to standardize data for older matlab versions
     % subtract mean of each column
     X_WT_c=X_WT-repmat(mean(X_WT_n),num_obs,1);
     % divide by the standard deviation of each column
     X_WT_norm=X_WT_c./repmat(std(X_WT_n,0,1),num_obs,1);
 
-    
     % covariance - Eq. 10 in WRR2020 paper
     C(:,i_var) = 1/(N-1)*Y'*X_WT_norm(1:N,:); 
     
@@ -81,7 +83,7 @@ for i_var = 1 : num_var
 	end
 	
     % add mean back
-    X_WaSP(:,i_var) = X_WaSP(:,i_var) + mean(X(1:N,i_var)); 
+    X_WaSP(:,i_var) = X_WaSP(:,i_var) + mean(X(:,i_var)); 
 	
 
 end
