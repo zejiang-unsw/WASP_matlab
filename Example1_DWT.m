@@ -1,23 +1,24 @@
-clc
-clear
+clc; clear
 close all
+% Created by Ze Jiang on 22/07/2024
 
-% Created by Ze Jiang on 15/09/2021
-% Y: response = N x 1
-% X: predictor= (N+N_fc) x n_var
-
-N = 512;        % number of observation
-N_fc=0;         % number of forecast (optimal)
-n_var=4;        % number of variable
-iseed = 101;    % seed number for random number generator
-
+%% synthetic data generation
 % initialize random number generator
+iseed = 101;    % seed number for random number generator
 rng(iseed,'twister')
 
-% synthetic data generation
-t = linspace(-pi,pi,N);
-Y = (sin(t) + 1.0*randn(size(t)))'; % sine wave add noise
-X = randn(N+N_fc,n_var); % random predictors
+N = 500;
+
+% case 1
+%X = randn(N,1); % random predictors
+
+% case 2
+fs = 50;
+dt = 1/fs;
+t = 0:dt:dt*(N-1); 
+%X = (sin(2*pi*t)+0.1*randn(1,N))';
+X = (sin(2*pi*t+randn(1,1))+0.1*randn(1,N))';
+plot(t,X)
 
 % wavelet with N vanishing moments 
 n_vanish = 1; % db1 is equivalent to haar
@@ -37,7 +38,22 @@ end
 % maximum decomposition level: floor(log2(size(X,1)))
 lev = floor(log2(N))-1; 
 
-% wavelet transforms
+%% scale to frequency
+% Set sampling period DELTA (dt) and wavelet name.
+delta = 1/12; 
+% Define scales.
+scales = 2.^(1:lev);
+
+% Compute associated pseudo-frequencies.
+% scal2frq: returns the pseudo-frequencies corresponding to the 
+% scales  given by A and the wavelet function 'wname' 
+% and the sampling period DELTA.
+f = scal2frq(scales,wname,delta); % f = centfrq(wname)./(a.*dt); 
+
+% Compute associated pseudo-periods.
+per = 1./f
+
+%% wavelet transforms
 X_tmp = X(:,1); % choose any variable, predictor or response
 
 disp('DWT MRA')
