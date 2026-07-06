@@ -237,10 +237,7 @@ function out = stepwise_VT(Ycal, Xcal, Xval, opts)
     % Calibration raw selected predictors after sequential conditioning.
     dpCal = local_condition_selected_raw(Xcal, selected, Zcal, opts.Kres);
 
-    % Validation transformation. The selected covariance vectors are applied
-    % through WaSP_val.m. Later selected validation predictors are residualised
-    % against already transformed validation predictors, matching the logic of
-    % R stepwise.VT.val.
+
     if isempty(selected)
         Zval = zeros(nVal,0);
         dpVal = zeros(nVal,0);
@@ -478,9 +475,7 @@ end
 
 function yhat = local_knn_predict_same(y, Z, K)
     % Non-LOOCV version for validation-period sequential conditioning.
-    % Since y and Z are from the same validation block and there is no separate
-    % training set, this follows the same practical residualisation structure
-    % used by the single-block R validation code.
+  
     y = double(y);
     Z = double(Z);
     n = size(Z,1);
