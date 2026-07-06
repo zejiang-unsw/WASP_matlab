@@ -6,8 +6,7 @@ function out = stepwise_VT(Ycal, Xcal, Xval, opts)
 %
 %   PURPOSE
 %   -------
-%   The normal MATLAB WaSP.m transforms all predictors independently. This
-%   function adds the R-style stepwise layer:
+%   The normal MATLAB WaSP.m transforms all predictors independently. 
 %       1. transform each remaining candidate predictor using WaSP;
 %       2. calculate partial informational correlation (PIC);
 %       3. select the predictor with the largest PIC;
@@ -78,14 +77,7 @@ function out = stepwise_VT(Ycal, Xcal, Xval, opts)
 %   out.S        : selected WaSP covariance vectors, one column per selection.
 %   out.stage    : detailed information for each selected step.
 %
-%   IMPORTANT NUMERICAL NOTE
-%   ------------------------
-%   This file follows the high-level R stepwise.VT / stepwise.VT.val logic,
-%   but MATLAB and R wavelet implementations can differ in padding, boundary
-%   handling, standardisation, and reconstruction. Therefore results should be
-%   verified if replacing the R workflow in a publication.
-%
-%   See also WaSP, WaSP_val, dwtmra, AT.
+
 
 
 
