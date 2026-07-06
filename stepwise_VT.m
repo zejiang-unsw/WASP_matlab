@@ -2,14 +2,12 @@ function out = stepwise_VT(Ycal, Xcal, Xval, opts)
 %STEPWISE_VT Stepwise high-order WASP variance transformation in MATLAB.
 %
 %   out = STEPWISE_VT(Ycal, Xcal, Xval, opts)
-%
-%   This is a MATLAB single-file counterpart of the R WASP functions
-%   stepwise.VT() + stepwise.VT.val(). It is intended to be placed directly
-%   in the existing WASP_matlab repository beside WaSP.m and WaSP_val.m.
+
 %
 %   PURPOSE
 %   -------
- 
+%   The normal MATLAB WaSP.m transforms all predictors independently. This
+%   function adds the R-style stepwise layer:
 %       1. transform each remaining candidate predictor using WaSP;
 %       2. calculate partial informational correlation (PIC);
 %       3. select the predictor with the largest PIC;
@@ -45,7 +43,7 @@ function out = stepwise_VT(Ycal, Xcal, Xval, opts)
 %       opts.method   = 'dwt';      % 'dwt', 'dwtmra', 'modwt', 'modwtmra', 'at'
 %       opts.wf       = 'db4';      % MATLAB style 'db4' or R style 'd8'
 %       opts.J        = 4;          % decomposition level
-%       opts.Kres     = 17;         % K for KNN residualisation
+%       opts.Kres     = 5;         % K for KNN residualisation
 %       opts.boundary = 'periodic'; % stored for compatibility
 %       opts.flagSign = false;      % passed to WaSP/WaSP_val as flag_sign
 %       opts.verbose  = true;
@@ -89,9 +87,7 @@ function out = stepwise_VT(Ycal, Xcal, Xval, opts)
 %
 %   See also WaSP, WaSP_val, dwtmra, AT.
 
-% Created as a MATLAB single-file replacement for the R stepwise.VT workflow.
-% The file intentionally uses the existing MATLAB WASP functions where
-% possible so that it blends into the original WASP_matlab repository.
+
 
     if nargin < 4 || isempty(opts)
         opts = struct();
